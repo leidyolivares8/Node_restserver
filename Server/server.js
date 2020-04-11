@@ -1,47 +1,33 @@
 require('./config/config');
-const express = require('express');
-const app = express();
+const express = require('express'); //LIBRERIA CREAR APLICACIONES WEB DEL LADO DEL SERVIDOR
+const mongoose = require('mongoose'); //LIBRERIA PARA CONECTARNOS A LA BASE DE DATOS MONGO
 const bodyParser = require('body-parser')
 
+
+const app = express();
 
 app.use(bodyParser.urlencoded({ extended: false })) //midelware cada peticion pasa siempre por aqui
 app.use(bodyParser.json())
 
-app.get('/usuario', function(req, res) {
-    res.json('Bienvenido get consultar, REST TRANSFERENCIA DE ESTADO REPRESENTACIONAL,');
-})
+
+app.use(require('./routes/usuario')); //Enlazar pagina entrada del localhost con usuario GEP-POST-DELETE
 
 
-app.post('/usuario', function(req, res) { //postman body x-www-form-urlencoded edad 33(bodyParser) body key:edad value:33
 
-    let body = req.body;
+//CONEXION A LA BASE DE DATOS EN LA NUBE CONECTAR MLAB O MONGO ATLAS REMOTA Y LOCAL
+mongoose.connect(process.env.URLDB, { useNewUrlParser: true, useCreateIndex: true, useUnifiedTopology: true }, (err, res) => {
+    if (err) throw err;
+    console.log('Base de datos ONLINE');
 
-    if (body.edad === undefined) {
-        res.status(400).json({
+});
 
-            ok: false,
-            mensaje: 'La edad debe ser neceario'
-        });
+//CONEXION A LA BASE DE DATOS LOCAL
+//mongoose.connect('mongodb://localhost:27017/cafe', { useNewUrlParser: true, useCreateIndex: true }, //{esto por mensaje en el git bash}
+//    (err, res) => {
+//       if (err) throw err;
+//       console.log('Base de datos ONLINE');
+// });
 
-    } else {
-        res.json({
-            persona: body //{"edad":"33"}  //{"persona":{"edad":"33""}}
-        });
-    }
-})
-
-
-app.put('/usuario/:id', function(req, res) { //id parametro que recibo en la url
-
-    let id = req.params.id; //obtener el parametro de la url
-    res.json({
-        id
-    })
-})
-
-app.delete('/usuario', function(req, res) {
-    res.json('Eliminar con post');
-})
 
 
 
